@@ -16,9 +16,6 @@ df_elements = pd.read_json('./raw_data/elements.json')
 df_VASP_valence = pd.read_csv('./raw_data/Default_PAW_potentials_VASP.csv', sep=';')
 
 def set_dopants_for_pure_elements(df, base='Ti'):
-    '''
-    
-    '''
     all_dopants = []
     for idx, row in df.dropna(axis='rows').iterrows():
         dopants = row['dopants']
