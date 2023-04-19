@@ -1,0 +1,9 @@
+pandas
+numpy
+warnings
+tqdm
+sklearn
+seaborn
+pymatgen
+tpot
+xgboost
