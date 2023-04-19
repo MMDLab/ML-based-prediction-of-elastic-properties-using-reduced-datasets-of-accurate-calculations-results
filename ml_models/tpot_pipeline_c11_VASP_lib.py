@@ -6,7 +6,8 @@ from sklearn.model_selection import train_test_split
 from sklearn.pipeline import make_pipeline, make_union
 from sklearn.svm import LinearSVR
 from tpot.builtins import StackingEstimator
-def model1():
+
+def model2():
 	exported_pipeline = make_pipeline(
 	    StackingEstimator(estimator=RandomForestRegressor(bootstrap=True, max_features=0.4, min_samples_leaf=5, min_samples_split=7, n_estimators=100)),
 	    StackingEstimator(estimator=RandomForestRegressor(bootstrap=True, max_features=0.05, min_samples_leaf=6, min_samples_split=8, n_estimators=100)),

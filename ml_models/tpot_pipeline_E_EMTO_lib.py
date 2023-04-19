@@ -6,6 +6,7 @@ from sklearn.model_selection import train_test_split
 from sklearn.pipeline import make_pipeline, make_union
 from sklearn.preprocessing import StandardScaler
 from tpot.builtins import StackingEstimator, ZeroCount
+
 def model1():
 	exported_pipeline = make_pipeline(
 	    ZeroCount(),

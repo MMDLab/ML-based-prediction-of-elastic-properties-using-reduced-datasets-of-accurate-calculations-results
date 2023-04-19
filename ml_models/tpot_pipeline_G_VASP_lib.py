@@ -6,7 +6,8 @@ from sklearn.linear_model import RidgeCV
 from sklearn.model_selection import train_test_split
 from sklearn.pipeline import make_pipeline, make_union
 from tpot.builtins import StackingEstimator
-def model1():
+
+def model2():
 	exported_pipeline = make_pipeline(
 	    StackingEstimator(estimator=ExtraTreesRegressor(bootstrap=False, max_features=1.0, min_samples_leaf=6, min_samples_split=19, n_estimators=100)),
 	    SelectPercentile(score_func=f_regression, percentile=16),

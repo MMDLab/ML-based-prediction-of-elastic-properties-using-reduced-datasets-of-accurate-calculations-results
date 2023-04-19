@@ -16,6 +16,15 @@ df_elements = pd.read_json('./raw_data/elements.json')
 df_VASP_valence = pd.read_csv('./raw_data/Default_PAW_potentials_VASP.csv', sep=';')
 
 def set_dopants_for_pure_elements(df, base='Ti'):
+    '''
+        Add pure elements as a unit cell formula of all possible combinations
+        of base and dopants with concentrations of 0.0
+        
+        Input: any pandas dataframe, contains columns:
+            - ucf: unit cell formula in pymatgen format as a standard python dictionary 
+            - dopants: python list of dopants (list of str)
+            - base: str
+    '''
     all_dopants = []
     for idx, row in df.dropna(axis='rows').iterrows():
         dopants = row['dopants']
@@ -35,6 +44,12 @@ def set_dopants_for_pure_elements(df, base='Ti'):
     return df.dropna(axis='rows').reset_index(drop=True)
 
 def mlb_feats_from_elemental_hull(df):
+    '''
+        Add features extracted from elemental phase diagrams from materials project
+        
+        Input: any pandas dataframe, contains column:
+            - ucf: unit cell formula in pymatgen format as a standard python dictionary 
+    '''
     hull_feats = pd.read_json('./raw_data/hull_feats.json')
     
     tmp_df = df.copy()
@@ -70,6 +85,11 @@ def mlb_feats_from_elemental_hull(df):
     return tmp_df
 
 def get_elem_props(elem, vasp_valence=False):
+    '''
+        Extract elemental properties from pymatgen.core.periodic_table
+        
+        Input: element symbol, str 
+    '''
     elem_props = {}
     elem_props['Z'] = periodic_table.Element(elem).Z
     elem_props['X'] = periodic_table.Element(elem).X
@@ -87,7 +107,11 @@ def get_elem_props(elem, vasp_valence=False):
     return elem_props
 
 def get_avg_prop(concentrations, prop):
-    ''' concentrations = dict obj '''
+    '''
+        Extract features using elemental properties
+        
+        Input: concentrations = dict obj, prop - str (e.g. 'Z', 'X', ...)
+    '''
     avg_prop = 0
     try:
         for symbol, concentraion in concentrations.items():
@@ -98,7 +122,12 @@ def get_avg_prop(concentrations, prop):
         return np.nan
 
 def get_avg_dft_prop(concentrations, prop):
-    ''' concentrations = dict obj '''
+    '''
+        Extract features using information about stable forms of elements
+        from materials project database
+        
+        Input: concentrations = dict obj, prop - str (e.g. 'Z', 'X', ...)
+    '''
     avg_prop = 0
     try:
         for symbol, concentraion in concentrations.items():
@@ -111,6 +140,13 @@ def get_avg_dft_prop(concentrations, prop):
         return np.nan
 
 def get_space_groups(concentrations):
+    '''
+        Extract features on spacegroups 
+        using information about stable forms of elements
+        from materials project database
+        
+        Input: concentrations = dict obj
+    '''
     sgd = []
     for symbol, concentraion in concentrations.items():
         ffilter = (df_elements['element'] == symbol)
@@ -118,6 +154,13 @@ def get_space_groups(concentrations):
     return sgd
 
 def set_concentraions(df):
+    '''
+        Setting concentrations to extracted multi-labeled columns
+        for each element presented in dataset [df]
+        
+        Input: any dataframe, contains column:
+            - ucf: unit cell formula in pymatgen format as a standard python dictionary 
+    '''
     tmp_df = df.copy()
     for idx, row in tqdm.tqdm(tmp_df.iterrows(), total=df.shape[0]):
         concentrations = row['ucf']
@@ -126,6 +169,15 @@ def set_concentraions(df):
     return tmp_df
 
 def convert_to_feats(df):
+    '''
+        Dataset [df] aggregation to extract all features except "hull properties"
+        
+        Input: any dataframe, contains columns:
+            - ucf: unit cell formula in pymatgen format as a standard python dictionary 
+            - dopants: python list of dopants (list of str)
+            - base: str
+    '''
+    
     # Add average properties
     for prop in list(get_elem_props('Ti', vasp_valence=True).keys()):
         df[prop] = df['ucf'].apply(lambda x: get_avg_prop(x, prop))
@@ -157,6 +209,22 @@ def convert_to_feats(df):
     return df
 
 def interpolation_k_fold_cv(model, df, n_splits, prop_to_pred):
+    '''
+        Function to apply k-fold splitting based on alloys systems 
+        from [df]. Interpolation means that each system specified in [df]
+        will be splitted into different combined datasets, i.e. 
+        some concentrational points will be moved to test set
+        from each system at each step of validation.
+        
+        df: any pandas dataframe, contains columns:
+            - ucf: unit cell formula in pymatgen format as a standard python dictionary 
+            - dopants: python list of dopants (list of str)
+            - base: str
+            
+        model: sklearn pipeline
+        n_splits: int
+        prop_to_pred: any of 'C_prime', 'B', 'E', 'G', 'c11', 'c12', 'c44'
+    '''
     print('Model:', model)
     print('n_splits:', n_splits)
 
@@ -229,6 +297,13 @@ def interpolation_k_fold_cv(model, df, n_splits, prop_to_pred):
     return results, all_true, all_pred, np.concatenate(test_index)
 
 def leave_one_out_cv(model, X,y):
+    '''
+        Implementation of leave-one-out cross-validation
+        
+        model: sklearn pipeline
+        X: any pandas.DataFrame         
+        y: any pandas.Series obj
+    '''
     true, pred = [], []
     
     for idx, data in tqdm.tqdm(X.iterrows(), total=X.shape[0]):
@@ -263,8 +338,14 @@ def get_predictions(model1, model2,
                     test_set): # any dataframe with 'ucf' column
     
     '''
-        The same dataset as test set will be returned 
+        The same dataset as the test set will be returned 
         with a columns of predicted values
+        
+        model1, model2: sklearn pipelines
+        prop_to_pred: any of 'C_prime', 'B', 'E', 'G', 'c11', 'c12', 'c44', str
+        df_emto_converted, df_vasp_converted: pandas.DataFrames containing extracted features
+        test_set: pandas.DataFrame obtaind in "system_fold_cv" function below
+        
     '''
     print(f"Validated system: {test_set['base'].unique()[0]}-{test_set['dopant'].unique()[0]}")
     train_set = df_emto_converted.copy()
@@ -345,6 +426,20 @@ def system_fold_cv(tmp_df,
                    prop_to_pred,
                    df_emto_converted, df_vasp_converted):
     
+    '''
+        Function to apply k-fold splitting based on alloys systems 
+        from [df]. system_fold_cv means that each system specified in [df]
+        will be excluded from training set at each step of validation.
+        
+        tmp_df: pandas.DataFrame with systems to be tested, 
+                obtained from "get_set_for_system_fold_cv" function below
+            
+        model1, model2: sklearn pipelines
+        prop_to_pred: any of 'C_prime', 'B', 'E', 'G', 'c11', 'c12', 'c44', str
+        df_emto_converted, df_vasp_converted: pandas.DataFrames containing extracted features
+        test_set: pandas.DataFrame obtaind in "system_fold_cv" function below
+    '''
+    
     all_res = pd.DataFrame()
     tmp_df_grouped_lev_1 = tmp_df.groupby(['base'])
     selected_groups_lev_1 = list(tmp_df_grouped_lev_1.groups)
@@ -400,6 +495,9 @@ def system_fold_cv(tmp_df,
     return all_res, metrics
 
 def get_set_for_system_fold_cv(df_emto, df_vasp, prop_to_pred):
+    '''
+        simple aggregation of datasets to extract common systems
+    '''
     tmp_df_emto = df_emto[df_emto['dopants'].apply(lambda x: len(x)) == 1].copy()
     tmp_df_emto = tmp_df_emto[['ucf', 'base', 'dopants', prop_to_pred]]
     tmp_df_emto.columns = [f'True_EMTO' if i == prop_to_pred else i for i in tmp_df_emto.columns]
@@ -432,6 +530,12 @@ def get_set_for_system_fold_cv(df_emto, df_vasp, prop_to_pred):
     return tmp_df
 
 def fill_na_feats(model1_feats, X):
+    '''       
+        Adding all available features.
+        VASP set is not so wide as EMTO's one. 
+        Therefore some features in comparison with EMTO set can be dissapeared.
+        e.g. some groups of symmetry for some elements or presense of some elements.
+    '''
     X_ = pd.DataFrame()
     for i in model1_feats:
         c = 0

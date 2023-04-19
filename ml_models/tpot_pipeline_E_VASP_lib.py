@@ -6,7 +6,8 @@ from sklearn.pipeline import make_pipeline, make_union
 from sklearn.tree import DecisionTreeRegressor
 from tpot.builtins import StackingEstimator
 from xgboost import XGBRegressor
-def model1():
+
+def model2():
 	exported_pipeline = make_pipeline(
 	    StackingEstimator(estimator=DecisionTreeRegressor(max_depth=4, min_samples_leaf=20, min_samples_split=4)),
 	    StackingEstimator(estimator=LassoLarsCV(normalize=True)),

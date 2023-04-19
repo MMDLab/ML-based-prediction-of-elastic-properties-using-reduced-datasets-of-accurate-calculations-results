@@ -6,7 +6,8 @@ from sklearn.linear_model import ElasticNetCV
 from sklearn.model_selection import train_test_split
 from sklearn.pipeline import make_pipeline, make_union
 from tpot.builtins import StackingEstimator
-def model1():
+
+def model2():
 	exported_pipeline = make_pipeline(
 	    SelectFwe(score_func=f_regression, alpha=0.044),
 	    VarianceThreshold(threshold=0.1),

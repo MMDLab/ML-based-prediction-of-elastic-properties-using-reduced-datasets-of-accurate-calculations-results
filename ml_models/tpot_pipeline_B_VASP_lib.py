@@ -5,7 +5,8 @@ from sklearn.linear_model import ElasticNetCV, LassoLarsCV
 from sklearn.model_selection import train_test_split
 from sklearn.pipeline import make_pipeline, make_union
 from tpot.builtins import StackingEstimator
-def model1():
+
+def model2():
 	exported_pipeline = make_pipeline(
 	    StackingEstimator(estimator=LassoLarsCV(normalize=True)),
 	    SelectPercentile(score_func=f_regression, percentile=32),

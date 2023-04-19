@@ -5,6 +5,7 @@ from sklearn.linear_model import RidgeCV
 from sklearn.model_selection import train_test_split
 from sklearn.pipeline import make_pipeline, make_union
 from tpot.builtins import StackingEstimator, ZeroCount
+
 def model1():
 	exported_pipeline = make_pipeline(
 	    StackingEstimator(estimator=RidgeCV()),
