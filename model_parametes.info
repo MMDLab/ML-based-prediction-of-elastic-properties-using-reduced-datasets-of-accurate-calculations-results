@@ -1,0 +1,5 @@
+EMTO-CPA predictor parameters: 
+{'learning_rate': 0.2, 'depth': 6, 'l2_leaf_reg': 3, 'loss_function': 'MultiRMSE', 'eval_metric': 'MultiRMSE', 'task_type': 'CPU', 'iterations': 300, 'od_type': 'Iter', 'boosting_type': 'Plain', 'bootstrap_type': 'Bernoulli', 'allow_const_label': True, 'verbose': False}
+
+PAW-SQS predictor parameters: 
+{'learning_rate': 0.2, 'depth': 6, 'l2_leaf_reg': 3, 'loss_function': 'MultiRMSE', 'eval_metric': 'MultiRMSE', 'task_type': 'CPU', 'iterations': 100, 'od_type': 'Iter', 'boosting_type': 'Plain', 'bootstrap_type': 'Bernoulli', 'allow_const_label': True, 'verbose': False}
