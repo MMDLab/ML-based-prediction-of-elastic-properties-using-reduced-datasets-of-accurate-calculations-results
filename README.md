@@ -5,7 +5,7 @@ This repository contains data, described in the paper *"Machine learning-based p
 
 ---
 
-Files:
+# Files:
 - `model_parametes.info` - used parameters for model training
 - `custom_model.py` - python library containing the model as a class object
 - `multimodel.py` - script for using a pre-trained model
@@ -21,8 +21,8 @@ The main concept of this work is creation of two stacked estimators trained in a
 
 ---
 
-<div class="alert alert-info"><h4>Usage</h4><p>
+# Usage
+
   - Ensure that all requirements reached (see `requirements.txt`
   - `python multimodel.py -i test.txt`
   - output will be saved as `[input filename].csv`
-</p></div>
