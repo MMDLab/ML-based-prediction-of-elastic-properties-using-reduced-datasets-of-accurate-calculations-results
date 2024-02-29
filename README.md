@@ -20,3 +20,9 @@ Files:
 The main concept of this work is creation of two stacked estimators trained in a specific way. The first one is trained on large datatset of less accurate calculations made using EMTO-CPA and the second is trained on the much smaller dataset of more accurate PAW-SQS calculations.
 
 ---
+
+<div class="alert alert-info"><h4>Usage</h4><p>
+  - Ensure that all requirements reached (see `requirements.txt`
+  - `python multimodel.py -i test.txt`
+  - output will be saved as `[input filename].csv`
+</p></div>
