@@ -1,0 +1,6 @@
+Sn0.5Ti0.5
+Sn0.25Ti0.25Zr0.25V0.25
+Sc0.2V0.8
+Sc
+ScY
+HfNbTaTiZrC5
