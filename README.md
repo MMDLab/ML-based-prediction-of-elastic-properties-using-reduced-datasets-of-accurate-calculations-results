@@ -5,7 +5,7 @@ This repository contains data, described in the paper *"Machine learning-based p
 
 ---
 
-# Files:
+# Files
 - `model_parametes.info` - used parameters for model training
 - `custom_model.py` - python library containing the model as a class object
 - `multimodel.py` - script for using a pre-trained model
